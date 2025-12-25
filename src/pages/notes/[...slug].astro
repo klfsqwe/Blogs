@@ -1,0 +1,112 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+// 1. 生成静态路径：告诉 Astro 有哪些笔记需要生成页面
+export async function getStaticPaths() {
+  const notes = await getCollection('notes');
+  return notes.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+// 2. 获取当前页面的数据
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<Layout title={entry.data.title}>
+  <div class="paper-bg"></div>
+  
+  <main class="note-detail-container">
+    <article class="note-paper">
+      <header class="note-header">
+        <a href="/notes/" class="back-link">← 返回笔记墙</a>
+        <h1>{entry.data.title}</h1>
+        <time>{entry.data.pubDate.toLocaleDateString('zh-CN')}</time>
+      </header>
+      
+      <div class="note-content">
+        <Content />
+      </div>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  /* 背景：延续笔记墙的网格风格，但淡一点 */
+  .paper-bg {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+    background-color: #fdfdfd;
+    background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .note-detail-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+    min-height: 100vh;
+  }
+
+  /* 仿纸张效果 */
+  .note-paper {
+    background: white;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border-radius: 2px; /* 稍微尖一点，像纸 */
+    position: relative;
+    border: 1px solid #eee;
+  }
+  
+  /* 顶部装饰线 */
+  .note-paper::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #f6e05e, #ecc94b);
+  }
+
+  .note-header {
+    border-bottom: 2px dashed #eee;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    color: #a0aec0;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .back-link:hover { color: #2d3748; }
+
+  h1 { margin: 0; font-size: 2rem; color: #2d3748; }
+  time { display: block; margin-top: 0.5rem; color: #a0aec0; font-family: monospace; }
+
+  /* Markdown 内容样式优化 */
+  .note-content {
+    line-height: 1.8;
+    color: #4a5568;
+    font-size: 1.05rem;
+  }
+  /* 针对 markdown 里的元素简单的样式 */
+  .note-content :global(h2) { font-size: 1.5rem; margin-top: 2rem; color: #2d3748; }
+  .note-content :global(p) { margin-bottom: 1.5rem; }
+  .note-content :global(ul) { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+  .note-content :global(blockquote) { 
+    border-left: 4px solid #f6e05e; 
+    margin: 0; 
+    padding-left: 1rem; 
+    color: #718096; 
+    background: #fffff0;
+    padding: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .note-paper { padding: 1.5rem; }
+    h1 { font-size: 1.5rem; }
+  }
+</style>
