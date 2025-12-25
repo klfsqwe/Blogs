@@ -1,0 +1,19 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+const blogPosts = await getCollection('blog');
+---
+<Layout title="博客列表">
+  <main>
+    <h1>最新博客</h1>
+    <ul>
+      {blogPosts.map((post) => (
+        <li>
+          <a href={`/blog/${post.slug}/`}>
+            {post.data.title} ({post.data.pubDate.toLocaleDateString()})
+          </a>
+        </li>
+      ))}
+    </ul>
+  </main>
+</Layout>
