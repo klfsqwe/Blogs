@@ -1,19 +1,122 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-const notes = await getCollection('notes');
+
+const notes = (await getCollection('notes')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
 ---
-<Layout title="笔记列表">
-  <main>
-    <h1>我的笔记</h1>
-    <ul>
+
+<Layout title="碎片笔记 | Notes">
+  <!-- 网格纸背景 -->
+  <div class="grid-bg"></div>
+
+  <main class="container">
+    <header class="notes-header">
+      <h1>碎片笔记 📓</h1>
+      <p>灵光一闪、摘抄与备忘。</p>
+    </header>
+
+    <div class="masonry-grid">
       {notes.map((note) => (
-        <li>
-          <a href={`/notes/${note.slug}/`}>
-            {note.data.title} ({note.data.pubDate.toLocaleDateString()})
-          </a>
-        </li>
+        <a href={`/notes/${note.slug}/`} class="note-card">
+          <div class="note-pin"></div> <!-- 装饰用的图钉效果 -->
+          <h3>{note.data.title}</h3>
+          <time>{note.data.pubDate.toLocaleDateString()}</time>
+          <div class="note-footer">
+             <span>查看详情</span>
+             <span class="icon">↗</span>
+          </div>
+        </a>
       ))}
-    </ul>
+    </div>
   </main>
 </Layout>
+
+<style>
+  /* 点阵背景 */
+  .grid-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1;
+    background-image: radial-gradient(#cbd5e0 1.5px, transparent 1.5px);
+    background-size: 24px 24px; /* 点的间距 */
+    background-color: #f7fafc;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 3rem 1rem; }
+
+  .notes-header { text-align: center; margin-bottom: 3rem; }
+  .notes-header h1 { font-size: 2.5rem; color: #2d3748; margin-bottom: 0.5rem; }
+  .notes-header p { color: #718096; }
+
+  /* 瀑布流布局 */
+  .masonry-grid {
+    column-count: 3; /* 3列 */
+    column-gap: 1.5rem;
+  }
+
+  .note-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem; /* 卡片垂直间距 */
+    display: inline-block; /* 防止卡片跨列断裂 */
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 顶部黄色装饰条，模仿便利贴胶带 */
+  .note-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 6px;
+    background: linear-gradient(90deg, #f6e05e, #ecc94b);
+    opacity: 0.8;
+  }
+
+  .note-card:hover {
+    transform: translateY(-5px) rotate(1deg); /* 悬停时微微歪一点，很俏皮 */
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    border-color: #cbd5e0;
+    z-index: 2;
+  }
+
+  .note-card h3 {
+    margin: 1rem 0 0.5rem 0;
+    font-size: 1.2rem;
+    color: #2d3748;
+    line-height: 1.4;
+  }
+
+  .note-card time {
+    font-size: 0.8rem;
+    color: #a0aec0;
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+
+  .note-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #4a5568;
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 0.8rem;
+  }
+
+  .note-card:hover .note-footer { color: #d69e2e; }
+
+  @media (max-width: 768px) {
+    .masonry-grid { column-count: 2; }
+  }
+  @media (max-width: 480px) {
+    .masonry-grid { column-count: 1; }
+  }
+</style>
