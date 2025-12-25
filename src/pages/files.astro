@@ -1,64 +1,50 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// 👇 这里是你要修改链接的地方
-// 你以后可以在这里把 "url" 后面的链接换成你真实的网盘链接
+// 数据源
 const fileLinks = [
-  { name: "常用软件合集", url: "https://pan.baidu.com/s/xxxx", desc: "提取码: 1234" },
-  { name: "学习资料PDF", url: "https://drive.google.com/xxxx", desc: "如果不通请挂梯子" },
-  { name: "项目源码备份", url: "https://dropbox.com/xxxx", desc: "版本 v1.0" },
-  { name: "更多资源", url: "#", desc: "敬请期待" },
+  { name: "常用软件合集 (Win/Mac)", url: "#", desc: "提取码: 1234 | v2025.1", type: "zip" },
+  { name: "前端学习路线图.pdf", url: "#", desc: "高清矢量图", type: "pdf" },
+  { name: "个人项目源码备份", url: "#", desc: "GitHub 私有库镜像", type: "code" },
+  { name: "设计素材包", url: "#", desc: "字体、图标、配色方案", type: "folder" },
 ];
+
+// 简单的图标映射 helper
+const getIcon = (type) => {
+  const icons = { zip: '📦', pdf: '📄', code: '💻', folder: '📂', default: '🔗' };
+  return icons[type] || icons.default;
+};
 ---
 
-<Layout title="文件汇总">
-  <main>
-    <h1>📂 文件资源汇总</h1>
-    <p>以下是整理的网盘资源，点击直接跳转下载。</p>
+<Layout title="资源汇总 | Files">
+  <div class="tech-bg"></div>
+
+  <main class="container">
+    <div class="header-box">
+      <h1>资源归档 <span>/ FILES</span></h1>
+      <p>精选工具、文档与网盘资源直链。</p>
+    </div>
     
     <div class="file-grid">
       {fileLinks.map((file) => (
-        <a href={file.url} target="_blank" class="file-card">
-          <h3>{file.name}</h3>
-          <p>{file.desc}</p>
-          <span class="download-btn">点击访问 &rarr;</span>
-        </a>
+        <div class="file-item">
+          <div class="icon-wrapper">{getIcon(file.type)}</div>
+          <div class="file-info">
+            <h3>{file.name}</h3>
+            <p class="tag">{file.desc}</p>
+          </div>
+          <a href={file.url} target="_blank" class="download-btn">
+            Download
+          </a>
+        </div>
       ))}
     </div>
   </main>
 </Layout>
 
 <style>
-  /* 简单的卡片样式和动态悬停效果 */
-  .file-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-    gap: 1rem; 
-    margin-top: 2rem; 
-  }
-  .file-card { 
-    display: block;
-    border: 1px solid #ddd; 
-    padding: 1.5rem; 
-    border-radius: 8px; 
-    text-decoration: none; 
-    color: inherit; 
-    transition: all 0.3s ease; 
-    background: white; /* 确保卡片有背景色 */
-  }
-  /* 鼠标悬停时的动态上浮效果 */
-  .file-card:hover { 
-    transform: translateY(-5px); 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
-    border-color: #888;
-  }
-  h3 { margin: 0 0 0.5rem 0; font-size: 1.25rem; }
-  p { margin: 0; color: #666; font-size: 0.9rem; }
-  .download-btn { 
-    color: #0070f3; 
-    font-weight: bold; 
-    margin-top: 15px; 
-    display: block; 
-    font-size: 0.9rem;
-  }
-</style>
+  /* 科技感微噪点背景 */
+  .tech-bg {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+    background-color: #f3f4f6;
+    background-image: linear-gradient(0deg, transparent 24%, rgba(0, 0, 0, .05) 25%, rgba(0, 0, 0, .05) 26%, transparent 27%, transparent 74%, rgba(0, 0,
