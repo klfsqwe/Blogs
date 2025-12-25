@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// 👇 这里是你要修改链接的地方
+// 你以后可以在这里把 "url" 后面的链接换成你真实的网盘链接
+const fileLinks = [
+  { name: "常用软件合集", url: "https://pan.baidu.com/s/xxxx", desc: "提取码: 1234" },
+  { name: "学习资料PDF", url: "https://drive.google.com/xxxx", desc: "如果不通请挂梯子" },
+  { name: "项目源码备份", url: "https://dropbox.com/xxxx", desc: "版本 v1.0" },
+  { name: "更多资源", url: "#", desc: "敬请期待" },
+];
+---
+
+<Layout title="文件汇总">
+  <main>
+    <h1>📂 文件资源汇总</h1>
+    <p>以下是整理的网盘资源，点击直接跳转下载。</p>
+    
+    <div class="file-grid">
+      {fileLinks.map((file) => (
+        <a href={file.url} target="_blank" class="file-card">
+          <h3>{file.name}</h3>
+          <p>{file.desc}</p>
+          <span class="download-btn">点击访问 &rarr;</span>
+        </a>
+      ))}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* 简单的卡片样式和动态悬停效果 */
+  .file-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 1rem; 
+    margin-top: 2rem; 
+  }
+  .file-card { 
+    display: block;
+    border: 1px solid #ddd; 
+    padding: 1.5rem; 
+    border-radius: 8px; 
+    text-decoration: none; 
+    color: inherit; 
+    transition: all 0.3s ease; 
+    background: white; /* 确保卡片有背景色 */
+  }
+  /* 鼠标悬停时的动态上浮效果 */
+  .file-card:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+    border-color: #888;
+  }
+  h3 { margin: 0 0 0.5rem 0; font-size: 1.25rem; }
+  p { margin: 0; color: #666; font-size: 0.9rem; }
+  .download-btn { 
+    color: #0070f3; 
+    font-weight: bold; 
+    margin-top: 15px; 
+    display: block; 
+    font-size: 0.9rem;
+  }
+</style>
