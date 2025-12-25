@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+export async function getStaticPaths() {
+  const noteEntries = await getCollection('notes');
+  return noteEntries.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+interface Props {
+  entry: {
+    render: () => any;
+    data: {
+      title: string;
+      pubDate: Date;
+    };
+  };
+}
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+<Layout title={entry.data.title}>
+  <main>
+    <h1>{entry.data.title}</h1>
+    <p>{entry.data.pubDate.toLocaleDateString()}</p>
+    <article>
+      <Content />
+    </article>
+  </main>
+</Layout>
