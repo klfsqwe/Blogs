@@ -1,0 +1,141 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+// 1. 生成所有博客文章的静态路径
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+// 2. 获取文章内容
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout title={post.data.title}>
+  <!-- 延续列表页的流体背景，保持沉浸感 -->
+  <div class="ambient-bg"></div>
+
+  <main class="blog-post-container">
+    <article class="content-wrapper">
+      
+      <!-- 文章头部信息 -->
+      <header class="post-header">
+        <a href="/blog/" class="back-link">← 返回时光长廊</a>
+        <div class="meta-info">
+          <time datetime={post.data.pubDate.toISOString()}>
+            {post.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </time>
+        </div>
+        <h1 class="post-title">{post.data.title}</h1>
+        {post.data.heroImage && <img width={1020} height={510} src={post.data.heroImage} alt="" class="hero-image" />}
+      </header>
+
+      <!-- 文章正文 -->
+      <div class="markdown-body">
+        <Content />
+      </div>
+
+    </article>
+  </main>
+</Layout>
+
+<style>
+  /* 背景动画 */
+  .ambient-bg {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+    background: radial-gradient(circle at 0% 0%, #ecdbf3 0%, transparent 50%), 
+                radial-gradient(circle at 100% 100%, #dbeafe 0%, transparent 50%);
+    opacity: 0.6;
+  }
+
+  .blog-post-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+    min-height: 100vh;
+  }
+
+  .content-wrapper {
+    background: rgba(255, 255, 255, 0.85); /* 半透明白底，提升文字可读性 */
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.8);
+  }
+
+  /* 头部样式 */
+  .post-header { margin-bottom: 3rem; text-align: center; }
+  
+  .back-link {
+    display: inline-block; margin-bottom: 2rem;
+    color: #805ad5; font-weight: 600; text-decoration: none;
+    font-size: 0.9rem; letter-spacing: 0.05em;
+    transition: transform 0.2s;
+  }
+  .back-link:hover { transform: translateX(-5px); }
+
+  .meta-info { color: #a0aec0; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; }
+  
+  .post-title {
+    font-size: 2.5rem; line-height: 1.2;
+    color: #1a202c; margin: 0 0 2rem 0;
+    font-weight: 800;
+  }
+
+  .hero-image {
+    width: 100%; height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  /* Markdown 内容排版优化 */
+  .markdown-body {
+    line-height: 1.8;
+    font-size: 1.1rem;
+    color: #2d3748;
+  }
+
+  /* 针对 markdown 内部元素的样式 */
+  .markdown-body :global(h2) { 
+    font-size: 1.75rem; margin-top: 3rem; margin-bottom: 1.5rem; 
+    color: #1a202c; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; 
+  }
+  .markdown-body :global(h3) { font-size: 1.4rem; margin-top: 2rem; margin-bottom: 1rem; color: #2d3748; }
+  .markdown-body :global(p) { margin-bottom: 1.5rem; }
+  
+  .markdown-body :global(blockquote) {
+    border-left: 4px solid #805ad5;
+    background: #f3e8ff;
+    margin: 2rem 0; padding: 1rem 1.5rem;
+    border-radius: 0 8px 8px 0;
+    color: #553c9a;
+  }
+
+  .markdown-body :global(pre) {
+    background: #2d3748; color: #f7fafc;
+    padding: 1.5rem; border-radius: 8px;
+    overflow-x: auto; margin: 1.5rem 0;
+  }
+
+  .markdown-body :global(code) {
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+
+  .markdown-body :global(ul), .markdown-body :global(ol) {
+    margin-bottom: 1.5rem; padding-left: 2rem;
+  }
+  
+  .markdown-body :global(li) { margin-bottom: 0.5rem; }
+
+  @media (max-width: 640px) {
+    .content-wrapper { padding: 1.5rem; }
+    .post-title { font-size: 1.8rem; }
+  }
+</style>
