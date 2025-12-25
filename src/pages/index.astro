@@ -1,14 +1,193 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const navItems = [
+  {
+    title: '博客文章',
+    desc: '深度思考与技术复盘',
+    href: '/blog/',
+    icon: '✍️',
+    color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+  },
+  {
+    title: '碎片笔记',
+    desc: '日常灵感与快速记录',
+    href: '/notes/',
+    icon: '📓',
+    color: 'linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%)'
+  },
+  {
+    title: '文件汇总',
+    desc: '网盘资源与工具分享',
+    href: '/files/',
+    icon: '📂',
+    color: 'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)'
+  }
+];
 ---
-<Layout title="我的博客与笔记">
-  <main>
-    <h1>欢迎来到我的网站！</h1>
-    <p>这是一个集博客、笔记和文件分享的网站。</p>
-    <ul>
-      <li><a href="/blog/">博客文章</a></li>
-      <li><a href="/notes/">我的笔记</a></li>
-      <li><a href="/files/">文件汇总</a></li>
-    </ul>
-  </main>
+
+<Layout title="欢迎来到我的数字花园">
+  <div class="home-container">
+    
+    <!-- Hero 区域：标题与介绍 -->
+    <header class="hero">
+      <h1 class="animate-title">Hello, <span class="text-gradient">Welcome!</span></h1>
+      <p class="animate-subtitle">这里是我的数字花园，记录学习、生活与分享。</p>
+    </header>
+
+    <!-- 导航卡片区域 -->
+    <nav class="nav-grid">
+      {navItems.map((item, index) => (
+        <a href={item.href} class="nav-card" style={`--delay: ${index * 0.1 + 0.3}s`}>
+          <div class="icon-box" style={`background: ${item.color}`}>
+            {item.icon}
+          </div>
+          <div class="content">
+            <h2>{item.title}</h2>
+            <p>{item.desc}</p>
+          </div>
+          <div class="arrow">→</div>
+        </a>
+      ))}
+    </nav>
+
+  </div>
 </Layout>
+
+<style>
+  /* 容器布局 */
+  .home-container {
+    padding: 2rem 0;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Hero 区域样式 */
+  .hero {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.2;
+    color: #2d3748;
+  }
+
+  /* 渐变文字特效 */
+  .text-gradient {
+    background: linear-gradient(to right, #da62c4, #8739e5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: #718096;
+    margin-top: 1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 卡片网格布局 */
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* 卡片样式 */
+  .nav-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 16px;
+    text-decoration: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    
+    /* 初始隐藏，用于动画 */
+    opacity: 0;
+    animation: fadeUp 0.6s ease-out forwards;
+    animation-delay: var(--delay);
+  }
+
+  /* 卡片悬停特效 */
+  .nav-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+    color: white;
+  }
+
+  .content h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #2d3748;
+  }
+
+  .content p {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.875rem;
+    color: #718096;
+  }
+
+  .arrow {
+    margin-left: auto;
+    font-size: 1.2rem;
+    color: #cbd5e0;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+
+  .nav-card:hover .arrow {
+    transform: translateX(5px);
+    color: #8739e5;
+  }
+
+  /* 动画关键帧 */
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 标题进场动画 */
+  .animate-title {
+    animation: fadeUp 0.8s ease-out forwards;
+  }
+  
+  .animate-subtitle {
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.2s forwards;
+  }
+
+  /* 移动端适配 */
+  @media (max-width: 640px) {
+    h1 { font-size: 2.5rem; }
+    .hero { margin-bottom: 2rem; }
+  }
+</style>
