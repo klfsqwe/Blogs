@@ -1,19 +1,119 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-const blogPosts = await getCollection('blog');
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
 ---
-<Layout title="博客列表">
-  <main>
-    <h1>最新博客</h1>
-    <ul>
-      {blogPosts.map((post) => (
-        <li>
-          <a href={`/blog/${post.slug}/`}>
-            {post.data.title} ({post.data.pubDate.toLocaleDateString()})
-          </a>
-        </li>
+
+<Layout title="深度思考 | Blog">
+  <!-- 流体背景 -->
+  <div class="ambient-bg"></div>
+
+  <main class="container">
+    <header class="page-header">
+      <h1>深度思考 <span class="count">({posts.length})</span></h1>
+      <p>记录技术复盘与生活随笔，每一次落笔都是与未来的对话。</p>
+    </header>
+
+    <div class="post-list">
+      {posts.map((post) => (
+        <a href={`/blog/${post.slug}/`} class="post-card">
+          <!-- 如果有封面图显示图，没有则显示渐变色块 -->
+          <div class="card-image" style={post.data.heroImage ? `background-image: url(${post.data.heroImage})` : ''}>
+             {!post.data.heroImage && <div class="placeholder-art">✍️</div>}
+          </div>
+          
+          <div class="card-content">
+            <div class="meta">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {post.data.pubDate.toLocaleDateString('zh-CN')}
+              </time>
+            </div>
+            <h2 class="title">{post.data.title}</h2>
+            <p class="desc">{post.data.description || '点击阅读全文...'}</p>
+            <span class="read-more">阅读全文 &rarr;</span>
+          </div>
+        </a>
       ))}
-    </ul>
+    </div>
   </main>
 </Layout>
+
+<style>
+  /* 流体背景动画 */
+  .ambient-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1;
+    background: radial-gradient(circle at 0% 0%, #ecdbf3 0%, transparent 50%), 
+                radial-gradient(circle at 100% 100%, #dbeafe 0%, transparent 50%);
+    opacity: 0.7;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 3rem 1rem; }
+
+  .page-header { margin-bottom: 3rem; text-align: left; }
+  .page-header h1 { font-size: 2.5rem; font-weight: 800; color: #1a202c; letter-spacing: -0.03em; }
+  .page-header .count { font-size: 1.5rem; color: #a0aec0; font-weight: 400; }
+  .page-header p { color: #718096; font-size: 1.1rem; margin-top: 0.5rem; }
+
+  .post-list { display: flex; flex-direction: column; gap: 2rem; }
+
+  .post-card {
+    display: flex;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+
+  .post-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .card-image {
+    width: 240px;
+    background-color: #f7fafc;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* 默认渐变占位图 */
+  .placeholder-art {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; opacity: 0.8;
+  }
+
+  .card-content { flex: 1; padding: 2rem; display: flex; flex-direction: column; justify-content: center; }
+
+  .meta { font-size: 0.875rem; color: #a0aec0; margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .title { margin: 0 0 0.75rem 0; font-size: 1.5rem; color: #2d3748; line-height: 1.3; }
+  .desc { font-size: 1rem; color: #718096; line-height: 1.6; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  
+  .read-more {
+    font-size: 0.9rem; font-weight: 700; color: #805ad5;
+    display: flex; align-items: center; gap: 0.5rem;
+    opacity: 0.8; transition: gap 0.2s;
+  }
+  .post-card:hover .read-more { gap: 0.8rem; opacity: 1; }
+
+  /* 移动端适配 */
+  @media (max-width: 640px) {
+    .post-card { flex-direction: column; }
+    .card-image { width: 100%; height: 160px; }
+    .card-content { padding: 1.5rem; }
+  }
+</style>
